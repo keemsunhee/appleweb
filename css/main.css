@@ -33,6 +33,7 @@ a {
   height: 52px;
   border-bottom: 1px solid #ddd;
   padding: 0 1rem;
+  background-color: #dddddd75;
 }
 .global-nav-links,
 .local-nav-links {
@@ -71,6 +72,7 @@ a {
   margin: 5px 0;
   height: 3em;
   font-size: 2.5rem;
+  opacity: 0;
 }
 .main-message small {
   display: block;
@@ -142,6 +144,7 @@ a {
 #show-scene-3 #scroll-section-3 .stick-elem {
   display: block;
 }
+
 @media (min-width: 1024px) {
   #scroll-section-0 h1 {
     font-size: 9vw;
