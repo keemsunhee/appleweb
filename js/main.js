@@ -2,6 +2,7 @@
   let yOffset = 0;
   let prevScrollHeight = 0;
   let currentScene = 0;
+  let enterNewScene = false; // 새로운 scene이 시작된 순간 true
 
   const sceneInfo = [
     {
@@ -17,7 +18,8 @@
         messageD: document.querySelector("#scroll-section-0 .main-message.d"),
       },
       values: {
-        messageA_opacity: [0, 1],
+        messageA_opacity: [0, 1, { start: 0.1, end: 0.2 }],
+        messageB_opacity: [0, 1, { start: 0.3, end: 0.4 }],
       },
     },
     {
@@ -59,6 +61,7 @@
     }
 
     yOffset = window.pageYOffset;
+
     let totalScrollHeight = 0;
     for (let i = 0; i < sceneInfo.length; i++) {
       totalScrollHeight += sceneInfo[i].scrollHeight;
@@ -67,14 +70,42 @@
         break;
       }
     }
+
     document.body.setAttribute("id", `show-scene-${currentScene}`);
 
     // console.log("sceneInfo[0].objs.messageA:", sceneInfo[0].objs.messageA);
   }
 
   function calcValues(values, currentYOffset) {
-    let scrollRatio = currentYOffset / sceneInfo[currentScene].scrollHeight;
-    return scrollRatio * (values[1] - values[0]) + values[0];
+    let rv;
+    const scrollHeight = sceneInfo[currentScene].scrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight;
+    // return scrollRatio * (values[1] - values[0]) + values[0];
+
+    if (values.length === 3) {
+      //start - end 사이에 애니메이션 실행
+      const partScrollStart = values[2].start * scrollHeight;
+      const partScrollEnd = values[2].end * scrollHeight;
+      const partScrollHeight = partScrollEnd - partScrollStart;
+
+      if (
+        currentYOffset >= partScrollStart &&
+        currentYOffset <= partScrollEnd
+      ) {
+        rv =
+          ((currentYOffset - partScrollStart) / partScrollHeight) *
+            (values[1] - values[0]) +
+          values[0];
+      } else if (currentYOffset < partScrollStart) {
+        rv = values[0];
+      } else if (currentYOffset > partScrollEnd) {
+        rv = values[1];
+      }
+    } else {
+      rv = scrollRatio * (values[1] - values[0]) + values[0];
+    }
+
+    return;
   }
 
   function playAnimation() {
@@ -82,16 +113,33 @@
     const values = sceneInfo[currentScene].values;
     const currentYOffset = yOffset - prevScrollHeight;
 
-    let messageA_opacity_in = calcValues(
-      values.messageA_opacity,
-      currentYOffset
-    );
-    objs.messageA.style.opacity = messageA_opacity_in;
+    console.log(currentScene);
+
+    switch (currentScene) {
+      case 0:
+        console.log("0 play");
+        let messageA_opacity_in = calcValues(
+          values.messageA_opacity,
+          currentYOffset
+        );
+        objs.messageA.style.opacity = messageA_opacity_in;
+        console.log(messageA_opacity_in);
+        break;
+
+      case 1:
+        // console.log("1 play");
+        break;
+
+      case 2:
+        // console.log("2 play");
+        break;
+    }
   }
 
   function scrollLoop() {
-    let enterNewScene = false;
+    enterNewScene = false;
     prevScrollHeight = 0;
+
     for (let i = 0; i < currentScene; i++) {
       prevScrollHeight += sceneInfo[i].scrollHeight;
     }
@@ -114,6 +162,7 @@
 
   window.addEventListener("scroll", () => {
     yOffset = window.pageYOffset;
+    scrollLoop();
   });
 
   window.addEventListener("DOMContentLoaded", setLayout);
