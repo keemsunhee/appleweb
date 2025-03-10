@@ -105,7 +105,7 @@
       rv = scrollRatio * (values[1] - values[0]) + values[0];
     }
 
-    return;
+    return rv;
   }
 
   function playAnimation() {
@@ -113,7 +113,7 @@
     const values = sceneInfo[currentScene].values;
     const currentYOffset = yOffset - prevScrollHeight;
 
-    console.log(currentScene);
+    // console.log(currentScene);
 
     switch (currentScene) {
       case 0:
