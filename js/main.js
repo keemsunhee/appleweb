@@ -6,9 +6,9 @@
 
   const sceneInfo = [
     {
-      // 0번 섹션
+      // 0
       type: "sticky",
-      heightNum: 5,
+      heightNum: 5, // 브라우저 높이의 5배로 scrollHeight 세팅
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-0"),
@@ -18,43 +18,89 @@
         messageD: document.querySelector("#scroll-section-0 .main-message.d"),
       },
       values: {
-        messageA_opacity: [0, 1, { start: 0.1, end: 0.2 }],
-        messageB_opacity: [0, 1, { start: 0.3, end: 0.4 }],
+        messageA_opacity_in: [0, 1, { start: 0.1, end: 0.2 }],
+        messageB_opacity_in: [0, 1, { start: 0.3, end: 0.4 }],
+        messageC_opacity_in: [0, 1, { start: 0.5, end: 0.6 }],
+        messageD_opacity_in: [0, 1, { start: 0.7, end: 0.8 }],
+        messageA_translateY_in: [20, 0, { start: 0.1, end: 0.2 }],
+        messageB_translateY_in: [20, 0, { start: 0.3, end: 0.4 }],
+        messageC_translateY_in: [20, 0, { start: 0.5, end: 0.6 }],
+        messageD_translateY_in: [20, 0, { start: 0.7, end: 0.8 }],
+        messageA_opacity_out: [1, 0, { start: 0.25, end: 0.3 }],
+        messageB_opacity_out: [1, 0, { start: 0.45, end: 0.5 }],
+        messageC_opacity_out: [1, 0, { start: 0.65, end: 0.7 }],
+        messageD_opacity_out: [1, 0, { start: 0.85, end: 0.9 }],
+        messageA_translateY_out: [0, -20, { start: 0.25, end: 0.3 }],
+        messageB_translateY_out: [0, -20, { start: 0.45, end: 0.5 }],
+        messageC_translateY_out: [0, -20, { start: 0.65, end: 0.7 }],
+        messageD_translateY_out: [0, -20, { start: 0.85, end: 0.9 }],
       },
     },
     {
-      // 1번 섹션
+      // 1
       type: "normal",
-      heightNum: 5,
+      // heightNum: 5, // type normal에서는 필요 없음
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-1"),
+        content: document.querySelector("#scroll-section-1 .description"),
       },
     },
     {
-      // 2번 섹션
+      // 2
       type: "sticky",
       heightNum: 5,
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-2"),
+        messageA: document.querySelector("#scroll-section-2 .a"),
+        messageB: document.querySelector("#scroll-section-2 .b"),
+        messageC: document.querySelector("#scroll-section-2 .c"),
+        pinB: document.querySelector("#scroll-section-2 .b .pin"),
+        pinC: document.querySelector("#scroll-section-2 .c .pin"),
+      },
+      values: {
+        messageA_translateY_in: [20, 0, { start: 0.15, end: 0.2 }],
+        messageB_translateY_in: [30, 0, { start: 0.5, end: 0.55 }],
+        messageC_translateY_in: [30, 0, { start: 0.72, end: 0.77 }],
+        messageA_opacity_in: [0, 1, { start: 0.15, end: 0.2 }],
+        messageB_opacity_in: [0, 1, { start: 0.5, end: 0.55 }],
+        messageC_opacity_in: [0, 1, { start: 0.72, end: 0.77 }],
+        messageA_translateY_out: [0, -20, { start: 0.3, end: 0.35 }],
+        messageB_translateY_out: [0, -20, { start: 0.58, end: 0.63 }],
+        messageC_translateY_out: [0, -20, { start: 0.85, end: 0.9 }],
+        messageA_opacity_out: [1, 0, { start: 0.3, end: 0.35 }],
+        messageB_opacity_out: [1, 0, { start: 0.58, end: 0.63 }],
+        messageC_opacity_out: [1, 0, { start: 0.85, end: 0.9 }],
+        pinB_scaleY: [0.5, 1, { start: 0.5, end: 0.55 }],
+        pinC_scaleY: [0.5, 1, { start: 0.72, end: 0.77 }],
+        pinB_opacity_in: [0, 1, { start: 0.5, end: 0.55 }],
+        pinC_opacity_in: [0, 1, { start: 0.72, end: 0.77 }],
+        pinB_opacity_out: [1, 0, { start: 0.58, end: 0.63 }],
+        pinC_opacity_out: [1, 0, { start: 0.85, end: 0.9 }],
       },
     },
     {
-      // 3번 섹션
+      // 3
       type: "sticky",
       heightNum: 5,
       scrollHeight: 0,
       objs: {
         container: document.querySelector("#scroll-section-3"),
+        canvasCaption: document.querySelector(".canvas-caption"),
       },
+      values: {},
     },
   ];
 
   function setLayout() {
     // 각 스크롤 섹션의 높이 세팅
     for (let i = 0; i < sceneInfo.length; i++) {
-      sceneInfo[i].scrollHeight = sceneInfo[i].heightNum * window.innerHeight;
+      if (sceneInfo[i].type === "sticky") {
+        sceneInfo[i].scrollHeight = sceneInfo[i].heightNum * window.innerHeight;
+      } else if (sceneInfo[i].type === "normal") {
+        sceneInfo[i].scrollHeight = sceneInfo[i].objs.container.offsetHeight;
+      }
       sceneInfo[
         i
       ].objs.container.style.height = `${sceneInfo[i].scrollHeight}px`;
@@ -79,7 +125,7 @@
   function calcValues(values, currentYOffset) {
     let rv;
     const scrollHeight = sceneInfo[currentScene].scrollHeight;
-    const scrollRatio = currentYOffset / scrollHeight;
+    // const scrollRatio = currentYOffset / scrollHeight;
     // return scrollRatio * (values[1] - values[0]) + values[0];
 
     if (values.length === 3) {
@@ -112,18 +158,37 @@
     const objs = sceneInfo[currentScene].objs;
     const values = sceneInfo[currentScene].values;
     const currentYOffset = yOffset - prevScrollHeight;
+    const scrollHeight = sceneInfo[currentScene].scrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight;
 
     // console.log(currentScene);
 
     switch (currentScene) {
       case 0:
         console.log("0 play");
-        let messageA_opacity_in = calcValues(
-          values.messageA_opacity,
-          currentYOffset
-        );
-        objs.messageA.style.opacity = messageA_opacity_in;
-        console.log(messageA_opacity_in);
+
+        if (scrollRatio <= 0.22) {
+          //in
+          objs.messageA.style.opacity = calcValues(
+            values.messageA_opacity_in,
+            currentYOffset
+          );
+          objs.messageA.style.transform = `translateY(${calcValues(
+            values.messageA_translateY_in,
+            currentYOffset
+          )}%)`;
+        } else {
+          //out
+          objs.messageA.style.opacity = calcValues(
+            values.messageA_opacity_out,
+            currentYOffset
+          );
+          objs.messageA.style.transform = `translateY(${calcValues(
+            values.messageA_translateY_out,
+            currentYOffset
+          )}%)`;
+        }
+
         break;
 
       case 1:
