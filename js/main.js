@@ -151,7 +151,7 @@
       rv = scrollRatio * (values[1] - values[0]) + values[0];
     }
 
-    console.log("pinB scaleY:", calcValues(values.pinB_scaleY, currentYOffset));
+    // console.log("pinB scaleY:", calcValues(values.pinB_scaleY, currentYOffset));
     return rv;
   }
 
@@ -263,8 +263,8 @@
         break;
 
       case 2:
-        console.log("values 객체:", values);
-        console.log("pinB_scaleY 값:", values.pinB_scaleY);
+        // console.log("values 객체:", values);
+        // console.log("pinB_scaleY 값:", values.pinB_scaleY);
         if (objs.messageA) {
           objs.messageA.style.opacity = calcValues(
             values.messageA_opacity_in,
