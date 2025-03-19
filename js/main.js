@@ -123,16 +123,26 @@
   }
 
   function calcValues(values, currentYOffset) {
+    // console.log("⚠️ calcValues 실행됨 - 입력값:", values);
+    // console.log("⚠️ currentYOffset:", currentYOffset);
+
+    // if (!values || !Array.isArray(values) || values.length < 2) {
+    //   console.error("❌ calcValues 오류! values 값이 이상함:", values);
+    //   return 0; // 기본값 반환 (에러 방지)
+    // }
+
     let rv;
     const scrollHeight = sceneInfo[currentScene].scrollHeight;
     const scrollRatio = currentYOffset / scrollHeight;
     // return scrollRatio * (values[1] - values[0]) + values[0];
 
     if (values.length === 3) {
-      //start - end 사이에 애니메이션 실행
       const partScrollStart = values[2].start * scrollHeight;
       const partScrollEnd = values[2].end * scrollHeight;
       const partScrollHeight = partScrollEnd - partScrollStart;
+
+      // console.log("🔍 애니메이션 구간:", partScrollStart, "~", partScrollEnd);
+      // console.log("🔍 현재 Y오프셋:", currentYOffset);
 
       if (
         currentYOffset >= partScrollStart &&
@@ -151,7 +161,7 @@
       rv = scrollRatio * (values[1] - values[0]) + values[0];
     }
 
-    // console.log("pinB scaleY:", calcValues(values.pinB_scaleY, currentYOffset));
+    // console.log("🔹 calcValues 결과값:", rv);
     return rv;
   }
 
@@ -263,9 +273,9 @@
         break;
 
       case 2:
-        // console.log("values 객체:", values);
-        // console.log("pinB_scaleY 값:", values.pinB_scaleY);
-        if (objs.messageA) {
+        // console.log('2 play');
+        if (scrollRatio <= 0.25) {
+          // in
           objs.messageA.style.opacity = calcValues(
             values.messageA_opacity_in,
             currentYOffset
@@ -274,49 +284,99 @@
             values.messageA_translateY_in,
             currentYOffset
           )}%, 0)`;
-        }
-
-        if (objs.messageB) {
-          objs.messageB.style.opacity = calcValues(
-            values.messageB_opacity_in,
+        } else {
+          // out
+          objs.messageA.style.opacity = calcValues(
+            values.messageA_opacity_out,
             currentYOffset
           );
+          objs.messageA.style.transform = `translate3d(0, ${calcValues(
+            values.messageA_translateY_out,
+            currentYOffset
+          )}%, 0)`;
+        }
+
+        if (scrollRatio <= 0.57) {
+          // in
           objs.messageB.style.transform = `translate3d(0, ${calcValues(
             values.messageB_translateY_in,
             currentYOffset
           )}%, 0)`;
-        }
-
-        if (objs.messageC) {
-          objs.messageC.style.opacity = calcValues(
-            values.messageC_opacity_in,
+          objs.messageB.style.opacity = calcValues(
+            values.messageB_opacity_in,
             currentYOffset
           );
-          objs.messageC.style.transform = `translate3d(0, ${calcValues(
-            values.messageC_translateY_in,
+          objs.pinB.style.transform = `scaleY(${calcValues(
+            values.pinB_scaleY,
+            currentYOffset
+          )})`;
+        } else {
+          // out
+          objs.messageB.style.transform = `translate3d(0, ${calcValues(
+            values.messageB_translateY_out,
             currentYOffset
           )}%, 0)`;
-        }
-
-        if (objs.pinB) {
+          objs.messageB.style.opacity = calcValues(
+            values.messageB_opacity_out,
+            currentYOffset
+          );
           objs.pinB.style.transform = `scaleY(${calcValues(
             values.pinB_scaleY,
             currentYOffset
           )})`;
         }
 
-        if (objs.pinC) {
+        if (scrollRatio <= 0.83) {
+          // in
+          objs.messageC.style.transform = `translate3d(0, ${calcValues(
+            values.messageC_translateY_in,
+            currentYOffset
+          )}%, 0)`;
+          objs.messageC.style.opacity = calcValues(
+            values.messageC_opacity_in,
+            currentYOffset
+          );
+          objs.pinC.style.transform = `scaleY(${calcValues(
+            values.pinC_scaleY,
+            currentYOffset
+          )})`;
+        } else {
+          // out
+          objs.messageC.style.transform = `translate3d(0, ${calcValues(
+            values.messageC_translateY_out,
+            currentYOffset
+          )}%, 0)`;
+          objs.messageC.style.opacity = calcValues(
+            values.messageC_opacity_out,
+            currentYOffset
+          );
           objs.pinC.style.transform = `scaleY(${calcValues(
             values.pinC_scaleY,
             currentYOffset
           )})`;
         }
+
         break;
 
       case 3:
         // console.log('3 play');
         break;
     }
+
+    // console.log(
+    //   "messageA opacity:",
+    //   calcValues(values.messageA_opacity_in, currentYOffset)
+    // );
+    // console.log(
+    //   "messageB opacity:",
+    //   calcValues(values.messageB_opacity_in, currentYOffset)
+    // );
+    // console.log(
+    //   "messageC opacity:",
+    //   calcValues(values.messageC_opacity_in, currentYOffset)
+    // );
+    // console.log("pinB scaleY:", calcValues(values.pinB_scaleY, currentYOffset));
+    // console.log("pinC scaleY:", calcValues(values.pinC_scaleY, currentYOffset));
   }
 
   function scrollLoop() {
