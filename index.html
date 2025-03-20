@@ -24,7 +24,7 @@
     </style>
   </head>
   <body class="before-load">
-    <img class="sample-img" src="../video/002/IMG_7027.JPG" />
+    <img class="sample-img" src="./video/002/IMG_7027.JPG" />
 
     <script>
       const imgElem = document.querySelector(".sample-img");
@@ -36,7 +36,7 @@
       function setImages() {
         for (let i = 0; i < totalImagesCount; i++) {
           let imgElem = new Image();
-          imgElem.src = `../video/002/IMG_${7027 + i}.JPG`;
+          imgElem.src = `./video/002/IMG_${7027 + i}.JPG`;
           videoImages.push(imgElem);
         }
       }
