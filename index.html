@@ -15,7 +15,7 @@
       body.before-load {
         overflow-y: hidden;
       }
-      .sample-video {
+      .sample-img {
         position: fixed;
         top: 0;
         left: 0;
@@ -24,28 +24,41 @@
     </style>
   </head>
   <body class="before-load">
-    <video class="sample-video" src="../video/sample-low.mp4" muted></video>
-    <!-- <video class="sample-video" src="../video/sample-high.mp4" muted></video> -->
+    <img class="sample-img" src="../video/002/IMG_7027.JPG" />
 
     <script>
-      const videoElem = document.querySelector(".sample-video");
+      const imgElem = document.querySelector(".sample-img");
+      const videoImages = [];
+      let totalImagesCount = 960;
       let progress;
       let currentFrame;
+
+      function setImages() {
+        for (let i = 0; i < totalImagesCount; i++) {
+          let imgElem = new Image();
+          imgElem.src = `../video/002/IMG_${7027 + i}.JPG`;
+          videoImages.push(imgElem);
+        }
+      }
+
       function init() {
         document.body.classList.remove("before-load");
 
         window.addEventListener("scroll", function () {
           progress =
             pageYOffset / (document.body.offsetHeight - window.innerHeight);
-          console.log(progress);
           if (progress < 0) progress = 0;
           if (progress > 1) progress = 1;
 
-          videoElem.currentTime = videoElem.duration * progress;
+          requestAnimationFrame(function () {
+            currentFrame = Math.round((totalImagesCount - 1) * progress);
+            imgElem.src = videoImages[currentFrame].src;
+          });
         });
       }
 
       window.addEventListener("load", init);
+      setImages();
     </script>
   </body>
 </html>
