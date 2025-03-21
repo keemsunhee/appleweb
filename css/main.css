@@ -185,6 +185,7 @@ body.before-load {
 }
 .sticky-elem-canvas {
   top: 0;
+  background-color: #ccc;
   height: 100%;
 }
 .sticky-elem-canvas canvas {
