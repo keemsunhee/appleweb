@@ -64,8 +64,15 @@
         messageC: document.querySelector("#scroll-section-2 .c"),
         pinB: document.querySelector("#scroll-section-2 .b .pin"),
         pinC: document.querySelector("#scroll-section-2 .c .pin"),
+        canvas: document.querySelector("#video-canvas-1"),
+        context: document.querySelector("#video-canvas-1").getContext("2d"),
+        videoImages: [],
       },
       values: {
+        videoImageCount: 960,
+        imageSequence: [0, 959],
+        canvas_opacity_in: [1, 0, { start: 0, end: 0.1 }],
+        canvas_opacity_out: [1, 0, { start: 0.95, end: 1 }],
         messageA_translateY_in: [20, 0, { start: 0.15, end: 0.2 }],
         messageB_translateY_in: [30, 0, { start: 0.5, end: 0.55 }],
         messageC_translateY_in: [30, 0, { start: 0.72, end: 0.77 }],
@@ -106,7 +113,23 @@
       imgElem.src = `./video/001/IMG_${6726 + i}.JPG`;
       sceneInfo[0].objs.videoImages.push(imgElem);
     }
-    console.log(sceneInfo[0].objs.videoImages);
+
+    let imgElem2;
+    for (let i = 0; i < sceneInfo[2].values.videoImageCount; i++) {
+      imgElem2 = new Image();
+      imgElem2.src = `./video/002/IMG_${7027 + i}.JPG`;
+      sceneInfo[2].objs.videoImages.push(imgElem2);
+    }
+
+    //  첫 이미지가 로드되었는지 확인, 바로 drawImage
+    const firstImage = sceneInfo[0].objs.videoImages[0];
+    if (firstImage.complete) {
+      sceneInfo[0].objs.context.drawImage(firstImage, 0, 0);
+    } else {
+      firstImage.onload = () => {
+        sceneInfo[0].objs.context.drawImage(firstImage, 0, 0);
+      };
+    }
   }
   setCanvasImages();
 
@@ -134,20 +157,16 @@
       }
     }
 
+    const heightRatio = window.innerHeight / 1080;
+    sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+    sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+
     document.body.setAttribute("id", `show-scene-${currentScene}`);
 
     // console.log("sceneInfo[0].objs.messageA:", sceneInfo[0].objs.messageA);
   }
 
   function calcValues(values, currentYOffset) {
-    // console.log("⚠️ calcValues 실행됨 - 입력값:", values);
-    // console.log("⚠️ currentYOffset:", currentYOffset);
-
-    // if (!values || !Array.isArray(values) || values.length < 2) {
-    //   console.error("❌ calcValues 오류! values 값이 이상함:", values);
-    //   return 0; // 기본값 반환 (에러 방지)
-    // }
-
     let rv;
     const scrollHeight = sceneInfo[currentScene].scrollHeight;
     const scrollRatio = currentYOffset / scrollHeight;
@@ -157,9 +176,6 @@
       const partScrollStart = values[2].start * scrollHeight;
       const partScrollEnd = values[2].end * scrollHeight;
       const partScrollHeight = partScrollEnd - partScrollStart;
-
-      // console.log("🔍 애니메이션 구간:", partScrollStart, "~", partScrollEnd);
-      // console.log("🔍 현재 Y오프셋:", currentYOffset);
 
       if (
         currentYOffset >= partScrollStart &&
@@ -178,7 +194,6 @@
       rv = scrollRatio * (values[1] - values[0]) + values[0];
     }
 
-    // console.log("🔹 calcValues 결과값:", rv);
     return rv;
   }
 
@@ -196,6 +211,10 @@
           calcValues(values.imageSequence, currentYOffset)
         );
         objs.context.drawImage(objs.videoImages[sequence], 0, 0);
+        objs.canvas.style.opacity = calcValues(
+          values.canvas_opacity,
+          currentYOffset
+        );
 
         if (objs.messageA) {
           if (scrollRatio <= 0.22) {
@@ -294,8 +313,23 @@
 
         break;
 
+      case 1:
+      case 3:
+        const section2Objs = sceneInfo[2].objs;
+        if (section2Objs.messageA) section2Objs.messageA.style.opacity = 0;
+        if (section2Objs.messageB) section2Objs.messageB.style.opacity = 0;
+        if (section2Objs.messageC) section2Objs.messageC.style.opacity = 0;
+        // if (section2Objs.pinB) section2Objs.pinB.style.opacity = 0;
+        // if (section2Objs.pinC) section2Objs.pinC.style.opacity = 0;
+        break;
+
       case 2:
         // console.log('2 play');
+        let sequence2 = Math.round(
+          calcValues(values.imageSequence, currentYOffset)
+        );
+        objs.context.drawImage(objs.videoImages[sequence2], 0, 0);
+
         if (scrollRatio <= 0.25) {
           // in
           objs.messageA.style.opacity = calcValues(
@@ -379,26 +413,7 @@
         }
 
         break;
-
-      case 3:
-        // console.log('3 play');
-        break;
     }
-
-    // console.log(
-    //   "messageA opacity:",
-    //   calcValues(values.messageA_opacity_in, currentYOffset)
-    // );
-    // console.log(
-    //   "messageB opacity:",
-    //   calcValues(values.messageB_opacity_in, currentYOffset)
-    // );
-    // console.log(
-    //   "messageC opacity:",
-    //   calcValues(values.messageC_opacity_in, currentYOffset)
-    // );
-    // console.log("pinB scaleY:", calcValues(values.pinB_scaleY, currentYOffset));
-    // console.log("pinC scaleY:", calcValues(values.pinC_scaleY, currentYOffset));
   }
 
   function scrollLoop() {
@@ -413,7 +428,10 @@
 
     if (yOffset > prevScrollHeight + sceneInfo[currentScene].scrollHeight) {
       enterNewScene = true;
-      currentScene++;
+      if (currentScene < sceneInfo.length - 1) {
+        currentScene++;
+        document.body.setAttribute("id", `show-scene-${currentScene}`);
+      }
     }
 
     if (yOffset < prevScrollHeight) {
@@ -421,6 +439,15 @@
       if (currentScene === 0) return;
       currentScene--;
       document.body.setAttribute("id", `show-scene-${currentScene}`);
+    }
+
+    if (currentScene !== 2) {
+      const section2Objs = sceneInfo[2].objs;
+      section2Objs.messageA && (section2Objs.messageA.style.opacity = 0);
+      section2Objs.messageB && (section2Objs.messageB.style.opacity = 0);
+      section2Objs.messageC && (section2Objs.messageC.style.opacity = 0);
+      // section2Objs.pinB && (section2Objs.pinB.style.opacity = 0);
+      // section2Objs.pinC && (section2Objs.pinC.style.opacity = 0);
     }
 
     if (enterNewScene) return;
@@ -432,6 +459,8 @@
     scrollLoop();
   });
 
-  window.addEventListener("load", setLayout);
+  window.addEventListener("load", () => {
+    setLayout();
+  });
   window.addEventListener("resize", setLayout);
 })();
