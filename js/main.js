@@ -101,6 +101,13 @@
       objs: {
         container: document.querySelector("#scroll-section-3"),
         canvasCaption: document.querySelector(".canvas-caption"),
+        canvas: document.querySelector(".image-blend-canvas"),
+        context: document.querySelector(".image-blend-canvas").getContext("2d"),
+        imagesPath: [
+          "./images/blend-image-1.jpg",
+          "./images/blend-image-2.jpg",
+        ],
+        images: [],
       },
       values: {},
     },
@@ -119,6 +126,13 @@
       imgElem2 = new Image();
       imgElem2.src = `./video/002/IMG_${7027 + i}.JPG`;
       sceneInfo[2].objs.videoImages.push(imgElem2);
+    }
+
+    let imgElem3;
+    for (let i = 0; i < sceneInfo[3].objs.imagesPath.length; i++) {
+      imgElem3 = new Image();
+      imgElem3.src = sceneInfo[3].objs.imagesPath[i];
+      sceneInfo[3].objs.images.push(imgElem3);
     }
 
     //  첫 이미지가 로드되었는지 확인, 바로 drawImage
@@ -313,16 +327,6 @@
 
         break;
 
-      case 1:
-      case 3:
-        const section2Objs = sceneInfo[2].objs;
-        if (section2Objs.messageA) section2Objs.messageA.style.opacity = 0;
-        if (section2Objs.messageB) section2Objs.messageB.style.opacity = 0;
-        if (section2Objs.messageC) section2Objs.messageC.style.opacity = 0;
-        // if (section2Objs.pinB) section2Objs.pinB.style.opacity = 0;
-        // if (section2Objs.pinC) section2Objs.pinC.style.opacity = 0;
-        break;
-
       case 2:
         // console.log('2 play');
         let sequence2 = Math.round(
@@ -412,6 +416,44 @@
           )})`;
         }
 
+        break;
+
+      case 3:
+        const section2Objs = sceneInfo[2].objs;
+        if (section2Objs.messageA) section2Objs.messageA.style.opacity = 0;
+        if (section2Objs.messageB) section2Objs.messageB.style.opacity = 0;
+        if (section2Objs.messageC) section2Objs.messageC.style.opacity = 0;
+        // if (section2Objs.pinB) section2Objs.pinB.style.opacity = 0;
+        // if (section2Objs.pinC) section2Objs.pinC.style.opacity = 0;
+
+        //3
+
+        objs.canvas.width = window.innerWidth;
+        objs.canvas.height = window.innerHeight;
+
+        const widthRatio = window.innerWidth / objs.canvas.width;
+        const heightRatio = window.innerWidth / objs.canvas.height;
+        let canvasScaleRatio;
+
+        if (widthRatio <= heightRatio) {
+          //캔버스보다 브라우저 창이 얇은 경우
+          canvasScaleRatio = heightRatio;
+          console.log(heightRatio);
+        } else {
+          //캔버스보다 브라우저 창이 두꺼운 경우
+          canvasScaleRatio = widthRatio;
+          console.log(widthRatio);
+        }
+
+        objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
+        const blendImage = objs.images[0];
+        if (blendImage && blendImage.complete) {
+          objs.context.drawImage(blendImage, 0, 0);
+        } else {
+          blendImage.onload = () => {
+            objs.context.drawImage(blendImage, 0, 0);
+          };
+        }
         break;
     }
   }
