@@ -438,11 +438,11 @@
         if (widthRatio <= heightRatio) {
           //캔버스보다 브라우저 창이 얇은 경우
           canvasScaleRatio = heightRatio;
-          console.log(heightRatio);
+          // console.log(heightRatio);
         } else {
           //캔버스보다 브라우저 창이 두꺼운 경우
           canvasScaleRatio = widthRatio;
-          console.log(widthRatio);
+          // console.log(widthRatio);
         }
 
         objs.canvas.style.transform = `scale(${canvasScaleRatio})`;
