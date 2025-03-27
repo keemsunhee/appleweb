@@ -85,6 +85,12 @@ body.before-load {
   position: relative;
   padding-top: 100vh;
 }
+#scroll-section-3 canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 #scroll-section-0 h1 {
   position: relative;
   top: -10vh;
@@ -213,7 +219,7 @@ body.before-load {
   transform: translate3d(-50%, -50%, 0);
 }
 .image-blend-canvas {
-  /* background: #f89; */
+  background: #f89;
 }
 #scroll-section-3 {
   display: flex;
